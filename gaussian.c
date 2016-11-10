@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
 	int m=0, n=0;
 	
 	// First line reads size of matrix mxn
-	int ret = fscanf(infile, "%d %d", &m, &n);
+	fscanf(infile, "%d %d", &m, &n);
 	printf(" Rows: %d\n Cols: %d\n", m, n);
 	
 	double *A = malloc(sizeof(double)*m*n);
@@ -59,10 +59,10 @@ int main(int argc, char *argv[]){
 
 	free(A);
 	free(b);
-	fclose(infile);	
+	fclose(infile);
+	return 0;	
 }
 
-// TODO: Fix me!
  /* 
  * Function: gaussian 
  * Purpose:  Use Gaussian elimination
@@ -74,15 +74,15 @@ void gaussian(double *A, double *b, int n){
 	int i, j, k;
 	for(i =0; i < n-1; i++){
 #pragma omp parallel for
-		for(j = i; j < n; j++){
+		for(j = i+1; j < n; j++){
 
 			if(j>i){
 				double temp = (A[j*(n)+i]) / (A[i*(n)+i]);
 				
 				for(k = i; k < n; k++){
 					A[j*(n)+k] -= temp * (A[i*(n)+k]);
-					b[j] -= temp * (b[i]);
 				}
+				b[j] -= temp * (b[i]);
 			}
 		}
 	}
@@ -104,7 +104,7 @@ default(none) private(i,j) shared(A, b, x, n, tmp)
 #pragma omp single
 		tmp = b[i];
 
-#pragma omp forreduction(+: tmp)
+#pragma omp for reduction(+: tmp)
 		for(j = i+1; j< n; j++) 
 			tmp += -A[i*n+j]*x[j];
 
@@ -112,7 +112,4 @@ default(none) private(i,j) shared(A, b, x, n, tmp)
 	x[i] = tmp/A[i*n+i];
 	}
 } //end rowSolve
-
-
-
 
