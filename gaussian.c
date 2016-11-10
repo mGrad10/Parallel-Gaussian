@@ -9,7 +9,8 @@
 #include <omp.h>
 
 // Function Prototypes
-void rowSolve(double A[], double b[], double x[], int n, int thread_count);
+//void rowSolve(double A[], double b[], double x[], int n, int thread_count);
+void gaussian(double *A, double *b, int n);
 
 int main(int argc, char *argv[]){
 	
@@ -31,44 +32,43 @@ int main(int argc, char *argv[]){
 	// First line reads size of matrix mxn
 	int ret = fscanf(infile, "%d %d", &m, &n);
 	printf(" Rows: %d\n Cols: %d\n", m, n);
+	
 	double *A = malloc(sizeof(double)*m*n);
 	double *b = malloc(sizeof(double)*m);
-
-	//TODO: Read in matrix A: m lines each containing a row of matrix A
-	//TODO: Read in matrix b: last line ? contains values of vector b
-		
-	int i =0;
-	while(ret == m*n && ret!= EOF){
-		for( i = 0; i< m; i++){
-			fscanf(infile,"%f", &A[i]);
-			printf("%f\n", A[i]);
-		}	
+	
+	//Read in matrix A and matrix b
+	int i,j;
+	for(i =0; i< m*n; i++){	
+		fscanf(infile,"%lf", &A[i]);
+		printf("A: %lf", A[i]);
 	}
-	int j = 0;
-	for(j = 0; j<m; j++){
-		printf("%f\n", A[i]);
-
-	}
+	for(j=0; j < n; j++){
+		fscanf(infile,"%lf", &b[j]);
+		printf("\nb: %lf", b[j]);
+	}	
 	free(A);
 	free(b);
 	fclose(infile);	
 }
 
-/* TODO: Implement Gaussian Elimination
+/* TODO: Fix me!
  * 
  * 
-void gaussian(double A[], double b[], int n){
-	
-	for(int i =0; i < n-1; i++){
-#pragma omp parallel for
-		for(int j = i; j < N; j++){
-			double temp = A[j][i]/A[i][i];
-			for(int k = i; k < N; k++){
-				A[j][k] -= (temp * A[i][k]);
-				b[j] -= (temp*b[i]);
+void gaussian(double *A, double *b, int n){
+	int i, j, k;
+	for(i =0; i < n-1; i++){
+//#pragma omp parallel for
+		for(j = i; j < n; j++){
+			double temp = (A[j*(n)+i]) / (A[i*(n)+i]);
+			
+			for(k = i; k < n; k++){
+				A[j*(n)+k] -= temp * (A[i*(n)+k]);
+				b[j] -= temp * (b[i]);
 			}
 		}
 	}
+
+		printf("%f\n", A[5]);
 }
 */
  
