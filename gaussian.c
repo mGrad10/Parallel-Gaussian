@@ -9,7 +9,7 @@
 #include <omp.h>
 
 // Function Prototypes
-//void rowSolve(double A[], double b[], double x[], int n, int thread_count);
+void rowSolve(double *A, double *b, double *x, int n, int thread_count);
 void gaussian(double *A, double *b, int n);
 
 int main(int argc, char *argv[]){
@@ -35,17 +35,28 @@ int main(int argc, char *argv[]){
 	
 	double *A = malloc(sizeof(double)*m*n);
 	double *b = malloc(sizeof(double)*m);
-	
+	double *x = malloc(sizeof(double)*m);	
 	//Read in matrix A and matrix b
 	int i,j;
 	for(i =0; i< m*n; i++){	
 		fscanf(infile,"%lf", &A[i]);
-		printf("A: %lf", A[i]);
+		//printf("A: %lf", A[i]);
 	}
 	for(j=0; j < n; j++){
 		fscanf(infile,"%lf", &b[j]);
-		printf("\nb: %lf", b[j]);
-	}	
+		//printf("\nb: %lf", b[j]);
+	}
+	gaussian(A, b, m);
+	//for(i =0; i< n*n; i++){	
+	//	printf("%lf", A[i]);
+	//}
+
+	rowSolve(A, b, x, n, thread_count);
+
+	for(i =0; i < n; i++){
+		printf("%lf\n",x[i]);
+	}
+
 	free(A);
 	free(b);
 	fclose(infile);	
@@ -53,50 +64,50 @@ int main(int argc, char *argv[]){
 
 /* TODO: Fix me!
  * 
- * 
+ **/ 
 void gaussian(double *A, double *b, int n){
 	int i, j, k;
 	for(i =0; i < n-1; i++){
-//#pragma omp parallel for
+#pragma omp parallel for
 		for(j = i; j < n; j++){
-			double temp = (A[j*(n)+i]) / (A[i*(n)+i]);
-			
-			for(k = i; k < n; k++){
-				A[j*(n)+k] -= temp * (A[i*(n)+k]);
-				b[j] -= temp * (b[i]);
+
+			if(j>i){
+				double temp = (A[j*(n)+i]) / (A[i*(n)+i]);
+				
+				for(k = i; k < n; k++){
+					A[j*(n)+k] -= temp * (A[i*(n)+k]);
+					b[j] -= temp * (b[i]);
+				}
 			}
 		}
 	}
-
-		printf("%f\n", A[5]);
 }
-*/
  
 /* Function: rowSolve
  * Purpose: Solve a triangular system using the row
  * 			oriented algorithm
  * In args: A, b, n, thread_count
  * Out arg: x
- 
-void rowSolve(double A[], double b[], double x[], int n, int thread_count){
+ **/ 
+void rowSolve(double *A, double *b, double *x, int n, int thread_count){
 	int i, j;
 	double tmp;
 
 #pragma omp parallel num_threads(thread_count) \
 default(none) private(i,j) shared(A, b, x, n, tmp)
-for(i= n-1; i >=0; i--) {
+	for(i= n-1; i >=0; i--) {
 #pragma omp single
 		tmp = b[i];
 
 #pragma omp forreduction(+: tmp)
-	for(j = i+1; j< n; j++) 
-		tmp += -A[i*n+j]*x[j];
+		for(j = i+1; j< n; j++) 
+			tmp += -A[i*n+j]*x[j];
 
 #pragma omp single
 	x[i] = tmp/A[i*n+i];
 	}
 } //end rowSolve
-*/
+
 
 
 
