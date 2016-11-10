@@ -46,7 +46,7 @@ int main(int argc, char *argv[]){
 		fscanf(infile,"%lf", &b[j]);
 		//printf("\nb: %lf", b[j]);
 	}
-	gaussian(A, b, m);
+	gaussian(A, b, n);
 	//for(i =0; i< n*n; i++){	
 	//	printf("%lf", A[i]);
 	//}
@@ -62,8 +62,13 @@ int main(int argc, char *argv[]){
 	fclose(infile);	
 }
 
-/* TODO: Fix me!
- * 
+// TODO: Fix me!
+ /* 
+ * Function: gaussian 
+ * Purpose:  Use Gaussian elimination
+ * 			 to get a matrix into 
+ * 			 upper triangular form
+ * In args:  A, b, n
  **/ 
 void gaussian(double *A, double *b, int n){
 	int i, j, k;
