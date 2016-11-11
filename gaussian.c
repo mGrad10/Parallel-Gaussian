@@ -2,6 +2,9 @@
  * Gaussian.c
  * Melinda Grad
  * Quentin Fulsher
+ * The purpose of this program to solve a system of
+ * equations using gaussian elmination followed by back
+ * substitution.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,7 +34,6 @@ int main(int argc, char *argv[]){
 	
 	// First line reads size of matrix mxn
 	fscanf(infile, "%d %d", &m, &n);
-	printf(" Rows: %d\n Cols: %d\n", m, n);
 	
 	double *A = malloc(sizeof(double)*m*n);
 	double *b = malloc(sizeof(double)*m);
@@ -40,17 +42,14 @@ int main(int argc, char *argv[]){
 	int i,j;
 	for(i =0; i< m*n; i++){	
 		fscanf(infile,"%lf", &A[i]);
-		//printf("A: %lf", A[i]);
 	}
 	for(j=0; j < n; j++){
 		fscanf(infile,"%lf", &b[j]);
-		//printf("\nb: %lf", b[j]);
 	}
-	gaussian(A, b, n);
-	//for(i =0; i< n*n; i++){	
-	//	printf("%lf", A[i]);
-	//}
 
+	//perform gaussian elimination
+	gaussian(A, b, n);
+	//perform back substitution
 	rowSolve(A, b, x, n, thread_count);
 
 	for(i =0; i < n; i++){
@@ -77,8 +76,10 @@ void gaussian(double *A, double *b, int n){
 		for(j = i+1; j < n; j++){
 
 			if(j>i){
+				// Divide element by "pivot" and make all
+				// coeffs under pivot equal "0"				
 				double temp = (A[j*(n)+i]) / (A[i*(n)+i]);
-				
+
 				for(k = i; k < n; k++){
 					A[j*(n)+k] -= temp * (A[i*(n)+k]);
 				}
